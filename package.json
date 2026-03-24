@@ -1,0 +1,25 @@
+{
+  "name": "contentful-model-comparator",
+  "version": "1.0.0",
+  "description": "Export and compare Contentful content models from different spaces",
+  "main": "compare-models.js",
+  "scripts": {
+    "start": "node compare-models.js ./config.json",
+    "compare": "node compare-models.js ./config.json",
+    "compare:custom": "node compare-models.js"
+  },
+  "keywords": [
+    "contentful",
+    "content-models",
+    "compare",
+    "export",
+    "import"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "contentful-import": "^2.0.0",
+    "contentful-management": "^11.0.0",
+    "dotenv": "^17.3.1"
+  }
+}
