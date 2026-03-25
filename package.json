@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node compare-models.js ./config.json",
     "compare": "node compare-models.js ./config.json",
-    "compare:custom": "node compare-models.js"
+    "compare:custom": "node compare-models.js",
+    "count-pilot": "node count-models.js pilot",
+    "count-rollout": "node count-models.js rollout"
   },
   "keywords": [
     "contentful",

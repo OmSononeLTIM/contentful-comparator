@@ -6,12 +6,14 @@ A self-sufficient Node.js tool to compare Contentful content models between spac
 
 - ✅ Export content models directly from Contentful spaces via API
 - ✅ Compare specific models between any two spaces (by ID)
+- ✅ **Count content models** - check usage against 300 model limit
 - ✅ Field-by-field comparison with detailed reports
 - ✅ Detect name mismatches (same ID, different names)
 - ✅ Identify missing fields, extra fields, and ID mismatches
 - ✅ **Dependency analysis** - detects which models reference others
 - ✅ **Smart import ordering** - suggests correct sequence to import models
 - ✅ Automated report generation with timestamps
+- ✅ Environment variable support for credentials
 - ✅ Config-driven workflow (no command-line arguments needed)
 
 ## Installation
@@ -51,13 +53,35 @@ npm install
 
 ## Usage
 
-### Quick Start
+### Compare Content Models
 
 ```bash
 npm start
 ```
 
 Runs comparison using `config.json` and generates a timestamped report file.
+
+### Count Content Models
+
+Check how many content models exist in a space (Contentful has a limit of 300 per space):
+
+```bash
+# Count models in Pilot space
+npm run count-pilot
+
+# Count models in Rollout space
+npm run count-rollout
+
+# Or count any space directly
+node count-models.js <spaceId> <accessToken> [spaceName]
+```
+
+**Output includes:**
+- Total model count vs. 300 limit
+- Remaining capacity
+- Usage percentage with visual bar
+- Warning when approaching limit
+- Complete list of all models
 
 ### Custom Config File
 
@@ -185,19 +209,21 @@ Model IDs are shown in Contentful's web UI:
 ## Current Capabilities
 
 - ✅ Compare content models between two Contentful spaces
+- ✅ Count content models and check usage against 300 limit
 - ✅ Identify missing and mismatched fields
 - ✅ Detect model name mismatches
 - ✅ Analyze dependencies between models
 - ✅ Suggest correct import order
 - ✅ Generate detailed timestamped reports
+- ✅ Environment variable support for credentials
 
 ## Future Enhancements
 
 - Auto-import missing models from Pilot to Rollout
 - Field-level sync capabilities
 - Batch operations for multiple config files
-- Environment variable support for credentials
 - Validation type comparison (required, unique, etc.)
+- Export dependency graph visualization
 
 ## License
 
