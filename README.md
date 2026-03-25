@@ -7,6 +7,8 @@ A self-sufficient Node.js tool to compare Contentful content models between spac
 - ✅ Export content models directly from Contentful spaces via API
 - ✅ Compare specific models between any two spaces (by ID)
 - ✅ **Count content models** - check usage against 300 model limit
+- ✅ **Find cleanup candidates** - identify models to remove from Rollout
+- ✅ **Space availability analysis** - plan cleanup and imports
 - ✅ Field-by-field comparison with detailed reports
 - ✅ Detect name mismatches (same ID, different names)
 - ✅ Identify missing fields, extra fields, and ID mismatches
@@ -82,6 +84,27 @@ node count-models.js <spaceId> <accessToken> [spaceName]
 - Usage percentage with visual bar
 - Warning when approaching limit
 - Complete list of all models
+
+### Find Models to Clean Up
+
+Identify models that exist in Rollout but not in Pilot (candidates for removal):
+
+```bash
+npm run cleanup
+```
+
+**This command:**
+- Fetches ALL models from both Pilot and Rollout spaces
+- Identifies models unique to Rollout (can be removed to free space)
+- Identifies models unique to Pilot (need to be imported)
+- Shows space availability analysis
+- Calculates if cleanup will free enough space for new imports
+- Saves results to timestamped file: `cleanup-analysis_YYYY-MM-DD_HH-MM-SS.txt`
+
+**Perfect for:**
+- Freeing up space when approaching the 300 model limit
+- Ensuring Rollout only has models that exist in Pilot
+- Planning space cleanup before importing new models
 
 ### Custom Config File
 
@@ -210,6 +233,8 @@ Model IDs are shown in Contentful's web UI:
 
 - ✅ Compare content models between two Contentful spaces
 - ✅ Count content models and check usage against 300 limit
+- ✅ Find models to remove (exist in Rollout but not in Pilot)
+- ✅ Analyze space availability for imports
 - ✅ Identify missing and mismatched fields
 - ✅ Detect model name mismatches
 - ✅ Analyze dependencies between models
