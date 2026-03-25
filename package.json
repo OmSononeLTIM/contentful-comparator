@@ -9,7 +9,12 @@
     "compare:custom": "node compare-models.js",
     "count-pilot": "node count-models.js pilot",
     "count-rollout": "node count-models.js rollout",
-    "cleanup": "node find-cleanup.js"
+    "cleanup": "node find-cleanup.js",
+    "import": "node import-models.js",
+    "import:config": "node import-models.js --from-config",
+    "import:config:dry-run": "node import-models.js --from-config --dry-run",
+    "import:all": "node import-models.js --all",
+    "import:dry-run": "node import-models.js --dry-run"
   },
   "keywords": [
     "contentful",

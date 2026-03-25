@@ -6,6 +6,7 @@ A self-sufficient Node.js tool to compare Contentful content models between spac
 
 - ✅ Export content models directly from Contentful spaces via API
 - ✅ Compare specific models between any two spaces (by ID)
+- ✅ **Import content models** - create or update models from Pilot to Rollout
 - ✅ **Count content models** - check usage against 300 model limit
 - ✅ **Find cleanup candidates** - identify models to remove from Rollout
 - ✅ **Space availability analysis** - plan cleanup and imports
@@ -14,8 +15,10 @@ A self-sufficient Node.js tool to compare Contentful content models between spac
 - ✅ Identify missing fields, extra fields, and ID mismatches
 - ✅ **Dependency analysis** - detects which models reference others
 - ✅ **Smart import ordering** - suggests correct sequence to import models
+- ✅ **Dry-run mode** - preview changes before executing
 - ✅ Automated report generation with timestamps
 - ✅ Environment variable support for credentials
+- ✅ Multi-environment support (master, staging, etc.)
 - ✅ Config-driven workflow (no command-line arguments needed)
 
 ## Installation
@@ -51,7 +54,8 @@ npm install
 2. **Configuration details**:
    - `spaceId`: Your Contentful space ID
    - `accessToken`: Contentful Management API (CMA) token (⚠️ keep private!)
-   - `modelsToCompare`: Array of content model IDs (not names) to compare
+   - `modelsToCompare`: Array of content model IDs for comparison operations
+   - `modelsToImport`: Array of content model IDs specifically for import operations (optional)
 
 ## Usage
 
@@ -105,6 +109,79 @@ npm run cleanup
 - Freeing up space when approaching the 300 model limit
 - Ensuring Rollout only has models that exist in Pilot
 - Planning space cleanup before importing new models
+
+### Import Content Models
+
+Import content models from Pilot to Rollout space:
+
+```bash
+# Interactive mode - choose model from list
+npm run import
+
+# Import models from modelsToImport array in config.json
+npm run import:config
+
+# Dry run - preview import from config without making changes
+npm run import:config:dry-run
+
+# Import specific model by ID
+node import-models.js productOverview
+
+# Import all models from modelsToCompare array
+npm run import:all
+
+# Dry run - preview without making changes
+npm run import:dry-run modelId
+node import-models.js --dry-run --all
+node import-models.js --from-config --dry-run
+```
+
+**How it works:**
+1. Fetches the content model from Pilot space
+2. Checks if it exists in Rollout space
+3. Creates new model or updates existing model
+4. Publishes the model to make it available
+5. Handles field additions, removals, and updates
+
+**Configuration:**
+- Add models to `modelsToImport` array in config.json for dedicated import list
+- Or use `modelsToCompare` array with `--all` flag
+- Interactive mode shows all available models from both arrays
+
+**Example config.json:**
+```json
+{
+  "modelsToCompare": ["productOverview", "blogPost"],
+  "modelsToImport": ["homepageHero", "appCarouselBannerBlock"]
+}
+```
+
+**Important features:**
+- ⚠️ **Dry run mode** - Preview changes without executing them
+- 🔒 **Environment-aware** - Uses PILOT_ENVIRONMENT and ROLLOUT_ENVIRONMENT from .env
+- 🔄 **Update or Create** - Automatically detects if model exists
+- 📊 **Detailed output** - Shows field changes, versions, and status
+- 🚦 **Rate limiting** - Adds delays between bulk imports
+
+**Safety notes:**
+- Always use `--dry-run` first to preview changes
+- Importing will overwrite existing models with the same ID
+- Make sure dependencies are imported first (use comparison tool to check)
+- Default environment is "master" if not specified in .env
+
+**Workflow example:**
+```bash
+# 1. Add models you want to import to config.json
+#    Edit "modelsToImport": ["homepageHero", "productCard"]
+
+# 2. Preview the import (safe - no changes made)
+npm run import:config:dry-run
+
+# 3. Review the output, then execute the import
+npm run import:config
+
+# 4. Verify the import succeeded in Contentful UI
+```
 
 ### Custom Config File
 
@@ -212,9 +289,38 @@ Each run generates a timestamped report file:
 
 ⚠️ **Important**: Never commit credentials to version control!
 
-- `config.json` is in `.gitignore` by default
-- Keep your Management API tokens private
+### Environment Variables (Recommended)
+
+For better security, use a `.env` file instead of storing credentials in `config.json`:
+
+1. Create a `.env` file in the project root:
+```env
+PILOT_SPACE_ID=your_pilot_space_id
+PILOT_ACCESS_TOKEN=your_pilot_access_token
+PILOT_ENVIRONMENT=master
+
+ROLLOUT_SPACE_ID=your_rollout_space_id
+ROLLOUT_ACCESS_TOKEN=your_rollout_access_token
+ROLLOUT_ENVIRONMENT=master
+```
+
+2. Environment variables override values in `config.json`
+3. `.env` file is automatically ignored by git
+4. Use `.env.example` as a template
+
+**Environment variable precedence:**
+- `PILOT_SPACE_ID` overrides `config.spaces.pilot.spaceId`
+- `PILOT_ACCESS_TOKEN` overrides `config.spaces.pilot.accessToken`
+- `PILOT_ENVIRONMENT` sets the Contentful environment (defaults to "master")
+- Same for `ROLLOUT_*` variables
+
+### Best Practices
+
+- Keep `config.json` for model IDs only (remove credentials)
+- Use `.env` for all sensitive tokens and space IDs
+- Never commit `.env` to version control
 - Use environment variables for CI/CD pipelines
+- Rotate access tokens regularly
 
 ## Troubleshooting
 
@@ -234,6 +340,7 @@ Model IDs are shown in Contentful's web UI:
 - ✅ Compare content models between two Contentful spaces
 - ✅ Count content models and check usage against 300 limit
 - ✅ Find models to remove (exist in Rollout but not in Pilot)
+- ✅ **Import models from Pilot to Rollout** - create or update models
 - ✅ Analyze space availability for imports
 - ✅ Identify missing and mismatched fields
 - ✅ Detect model name mismatches
@@ -241,14 +348,18 @@ Model IDs are shown in Contentful's web UI:
 - ✅ Suggest correct import order
 - ✅ Generate detailed timestamped reports
 - ✅ Environment variable support for credentials
+- ✅ Environment-aware operations (master, staging, etc.)
+- ✅ Dry-run mode for safe testing
+- ✅ Interactive model selection
 
 ## Future Enhancements
 
-- Auto-import missing models from Pilot to Rollout
-- Field-level sync capabilities
-- Batch operations for multiple config files
+- Batch field updates for existing models
 - Validation type comparison (required, unique, etc.)
 - Export dependency graph visualization
+- Automatic dependency resolution during import
+- Content migration (entries, not just models)
+- Rollback capabilities
 
 ## License
 
