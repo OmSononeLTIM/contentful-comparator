@@ -59,7 +59,8 @@
     "zone",
     "hierarchy",
     "link",
-    "languageSelectionBlock"
+    "languageSelectionBlock",
+    "region"
   ],
   "modelsToImport": [
     "menuLink"
